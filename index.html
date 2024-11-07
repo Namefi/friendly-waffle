@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waffle Adventures</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f3e5ab;
+            font-family: Arial, sans-serif;
+        }
+        #gameArea {
+            width: 400px;
+            height: 400px;
+            position: relative;
+            border: 2px solid #d2691e;
+            background-color: #ffebcd;
+        }
+        .character, .item, .obstacle {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+        }
+        #waffly {
+            background-color: #ffe5b4;
+            border: 2px solid #d2b48c;
+            border-radius: 5px;
+            top: 180px;
+            left: 180px;
+        }
+        #syrup {
+            background-color: #8b4513;
+            border-radius: 50%;
+        }
+        #toast {
+            background-color: #8b0000;
+            border-radius: 3px;
+        }
+        #score {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 18px;
+            color: #d2691e;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameArea">
+        <div id="waffly" class="character"></div>
+        <div id="syrup" class="item"></div>
+        <div id="toast" class="obstacle"></div>
+        <div id="score">Score: 0</div>
+    </div>
+    <script>
+        const gameArea = document.getElementById("gameArea");
+        const waffly = document.getElementById("waffly");
+        const syrup = document.getElementById("syrup");
+        const toast = document.getElementById("toast");
+        const scoreDisplay = document.getElementById("score");
+
+        let score = 0;
+        let wafflyPos = { x: 180, y: 180 };
+        const gameSize = 400;
+        const step = 20;
+
+        function randomPosition() {
+            return Math.floor(Math.random() * (gameSize / step)) * step;
+        }
+
+        function placeItem(item) {
+            item.style.left = `${randomPosition()}px`;
+            item.style.top = `${randomPosition()}px`;
+        }
+
+        function checkCollision(a, b) {
+            return a.x < b.x + 40 && a.x + 40 > b.x && a.y < b.y + 40 && a.y + 40 > b.y;
+        }
+
+        function moveWaffly(x, y) {
+            wafflyPos.x = Math.max(0, Math.min(gameSize - 40, wafflyPos.x + x));
+            wafflyPos.y = Math.max(0, Math.min(gameSize - 40, wafflyPos.y + y));
+            waffly.style.left = `${wafflyPos.x}px`;
+            waffly.style.top = `${wafflyPos.y}px`;
+
+            const syrupPos = { x: parseInt(syrup.style.left), y: parseInt(syrup.style.top) };
+            const toastPos = { x: parseInt(toast.style.left), y: parseInt(toast.style.top) };
+
+            if (checkCollision(wafflyPos, syrupPos)) {
+                score += 10;
+                scoreDisplay.textContent = `Score: ${score}`;
+                placeItem(syrup);
+                placeItem(toast);
+            }
+
+            if (checkCollision(wafflyPos, toastPos)) {
+                alert("Oh no! You hit burnt toast! Game over.");
+                score = 0;
+                scoreDisplay.textContent = `Score: ${score}`;
+                wafflyPos = { x: 180, y: 180 };
+                waffly.style.left = `${wafflyPos.x}px`;
+                waffly.style.top = `${wafflyPos.y}px`;
+                placeItem(syrup);
+                placeItem(toast);
+            }
+        }
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "ArrowUp") moveWaffly(0, -step);
+            if (e.key === "ArrowDown") moveWaffly(0, step);
+            if (e.key === "ArrowLeft") moveWaffly(-step, 0);
+            if (e.key === "ArrowRight") moveWaffly(step, 0);
+        });
+
+        placeItem(syrup);
+        placeItem(toast);
+    </script>
+</body>
+</html>
