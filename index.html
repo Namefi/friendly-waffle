@@ -13,6 +13,7 @@
             margin: 0;
             background-color: #f3e5ab;
             font-family: Arial, sans-serif;
+            overflow: hidden; /* Prevents page scrolling */
         }
         #gameArea {
             width: 400px;
@@ -125,10 +126,13 @@
         }
 
         document.addEventListener("keydown", (e) => {
-            if (e.key === "ArrowUp") moveWaffly(0, -step);
-            if (e.key === "ArrowDown") moveWaffly(0, step);
-            if (e.key === "ArrowLeft") moveWaffly(-step, 0);
-            if (e.key === "ArrowRight") moveWaffly(step, 0);
+            if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+                e.preventDefault(); // Prevents page from moving
+                if (e.key === "ArrowUp") moveWaffly(0, -step);
+                if (e.key === "ArrowDown") moveWaffly(0, step);
+                if (e.key === "ArrowLeft") moveWaffly(-step, 0);
+                if (e.key === "ArrowRight") moveWaffly(step, 0);
+            }
         });
 
         placeItem(syrup);
